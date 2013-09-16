@@ -17,7 +17,7 @@ DNSIP=$(dig +short $HOST)
 STOREDIP=$(cat $STOREDIPFILE)
 
 if [ "$NEWIP" != "$STOREDIP" ] || [ "$DNSIP" != "$NEWIP" ]; then
-	RESULT=$(wget -O "$LOGFILE" -q --user-agent="$USERAGENT" --no-check-certificate "https://$USERNAME:$PASSWORD@dynupdate.no-ip.com/nic/update?hostname=$HOST&myip=$NEWIP")
+	RESULT=$(curl --silent "https://$USERNAME:$PASSWORD@dynupdate.no-ip.com/nic/update?hostname=$HOST&myip=$NEWIP")
 
 	LOGLINE="[$(date +"%Y-%m-%d %H:%M:%S")] $RESULT"
 	echo $NEWIP > $STOREDIPFILE
