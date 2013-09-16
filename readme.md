@@ -6,9 +6,9 @@ Bash script to update the ip of an account on no-ip.com
 How to use
 ----------
 
-* Configure the script with the correct username, password, hostname, cache file (current IP), and log file
-* Make it executable (`chmod +x`)
-* Run it (`./noipupdater.sh`)
+* Configure the script with the correct username, password, hostname, based on the .credentials.example file
+* Make sure the script is executable (`chmod +x noipupdater.sh`)
+* Run the script (`./noipupdater.sh`)
 
 Tips!
 -----

@@ -1,31 +1,24 @@
 #!/bin/bash
 
-# No-IP uses emails as passwords, so make sure that you encode the @ as %40
-USERNAME=username
-PASSWORD=password
-HOST=hostsite
-LOGFILE=logdir/noip.log
-STOREDIPFILE=configdir/current_ip
-USERAGENT="Simple Bash No-IP Updater/0.4 antoniocs@gmail.com"
+# Get script's directory
+# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-if [ ! -e $STOREDIPFILE ]; then
-	touch $STOREDIPFILE
-fi
+# Source secrets
+. "${DIR}/.credentials"
 
-NEWIP=$(wget -O - http://icanhazip.com/ -o /dev/null)
-DNSIP=$(dig +short $HOST)
-STOREDIP=$(cat $STOREDIPFILE)
+# Get current IP and where the DNS settings point to
+NEWIP=$(curl --silent ifconfig.me)
+DNSIP=$(dig +short $HOSTNAME)
 
-if [ "$NEWIP" != "$STOREDIP" ] || [ "$DNSIP" != "$NEWIP" ]; then
-	RESULT=$(curl --silent "https://$USERNAME:$PASSWORD@dynupdate.no-ip.com/nic/update?hostname=$HOST&myip=$NEWIP")
-
+if [ "$DNSIP" != "$NEWIP" ]; then
+	RESULT=$(curl --silent "https://$NOIPUSERNAME:$NOIPPASSWORD@dynupdate.no-ip.com/nic/update?hostname=$NOIPHOST&myip=$NEWIP")
 	LOGLINE="[$(date +"%Y-%m-%d %H:%M:%S")] $RESULT"
-	echo $NEWIP > $STOREDIPFILE
 else
 	LOGLINE="[$(date +"%Y-%m-%d %H:%M:%S")] No IP change"
 fi
 
-echo $LOGLINE >> $LOGFILE
+echo $LOGLINE >> "${DIR}/noipupdater.log"
 
 exit 0
 
